@@ -1,0 +1,6 @@
+# back end
+pb_data
+go.sum
+
+# env
+.env
