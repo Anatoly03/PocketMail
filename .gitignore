@@ -2,5 +2,9 @@
 pb_data
 go.sum
 
+# node
+node_modules
+dist
+
 # env
 .env

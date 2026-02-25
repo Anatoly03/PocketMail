@@ -1,0 +1,6 @@
+{
+    "workspaces": ["client"],
+    "scripts": {
+        "serve": "npm run dev --workspace=client"
+    }
+}

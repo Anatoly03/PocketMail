@@ -1,10 +1,12 @@
 package main
 
 import (
+	"pocketmail-api/src/mail"
+
 	"log"
 	"os"
 	"strings"
-	
+
 	"github.com/joho/godotenv"
 	"github.com/pocketbase/pocketbase"
 )
@@ -16,6 +18,10 @@ func main() {
 	
 	// Create a new pocketbase instance.
 	app := pocketbase.New()
+	s := mail.MailServer{ App: app }
+
+	// Start the SMTP server in a separate goroutine.
+	go s.Serve()
 
 	// Start pocketbase.
 	if err := app.Start(); err != nil {
