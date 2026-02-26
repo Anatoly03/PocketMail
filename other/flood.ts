@@ -47,7 +47,7 @@ async function generateFake() {
             to, // Visible To: header
             sent, // Visible Date: header
             envelope: {
-                from: faker.internet.email(), // Actual MAIL FROM (for bounces)
+                from: fakeEmail, // Actual MAIL FROM (for bounces)
                 to: [to, fakeEmail], // Actual RCPT TO (for bounces)
             },
             subject,
