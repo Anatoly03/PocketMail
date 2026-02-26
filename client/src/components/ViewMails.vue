@@ -51,6 +51,8 @@ const pagination = reactive<Partial<PaginationProps>>({
     itemCount: 0,
 });
 
+const pb_sort = ref<string>("-created");
+
 /**
  * The columns of the table are static.
  */
@@ -83,8 +85,8 @@ const columns: DataTableColumns<RowData> = [
             const CUR_MONTH = 30 * TODAY; // 1 month in ms
             const CUR_YEAR = 365 * TODAY; // 1 year in ms
 
-            // if the mail was sent less than a minute ago, show "Just now"
-            if (Date.now() - row.sent.getTime() < MINUTE) {
+            // if the mail was sent less than few minutes, show "Just now"
+            if (Date.now() - row.sent.getTime() < 5 * MINUTE) {
                 return "Just now";
             }
 
@@ -121,12 +123,12 @@ const columns: DataTableColumns<RowData> = [
 /**
  *
  */
-async function query(page: number) {
+async function query(page: number = pagination.page ?? 1) {
     isLoading.value = true;
 
     try {
         const res = await pb.collection("mails").getList(page, pagination.pageSize, {
-            sort: "-created",
+            sort: pb_sort.value,
         });
         console.debug(res);
 
@@ -166,7 +168,11 @@ function updateFilters(filterState: FilterState, sourceColumn: TableBaseColumn) 
  * Update the sorter in the table.
  */
 function updateSorter(sorter: any) {
-    console.debug("Sorter updated:", sorter);
+    let new_sort = (sorter.order === 'ascend' ? '+' : '-') + sorter.columnKey;
+    if (new_sort !== pb_sort.value) {
+        pb_sort.value = new_sort;
+        query(1);
+    }
 }
 
 /**
