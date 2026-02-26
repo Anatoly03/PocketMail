@@ -1,6 +1,7 @@
 {
-    "workspaces": ["client"],
+    "workspaces": ["client", "other"],
     "scripts": {
-        "serve": "npm run dev --workspace=client"
+        "serve": "npm run dev --workspace=client",
+        "flood": "npm run flood --workspace=other"
     }
 }
