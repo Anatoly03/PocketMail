@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"io"
 	"net/mail"
+	"strings"
 
 	// "strconv"
 
 	"github.com/emersion/go-smtp"
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -105,13 +107,38 @@ func (bkd *MailSession) Data(r io.Reader) error {
 	}
 
 	record := core.NewRecord(collection)
+
+	// set general record fields
 	record.Set("messageId", headers["Message-Id"])
-	record.Set("sender", headers["From"])
-	record.Set("recipient", headers["To"])
 	record.Set("subject", headers["Subject"])
 	record.Set("headers", headers)
 	record.Set("body", string(body))
 	record.Set("incoming", true)
+
+	// retrieve user and host names
+	recipientName := headers["To"][0:strings.LastIndex(headers["To"], "@")]
+	recipientHost := headers["To"][strings.LastIndex(headers["To"], "@")+1:]
+	senderName := headers["From"][0:strings.LastIndex(headers["From"], "@")]
+	senderHost := headers["From"][strings.LastIndex(headers["From"], "@")+1:]
+
+	// host must be valid url
+	if !strings.HasPrefix(senderHost, "http://") && !strings.HasPrefix(senderHost, "https://") {
+		senderHost = "http://" + senderHost
+	}
+	if !strings.HasPrefix(recipientHost, "http://") && !strings.HasPrefix(recipientHost, "https://") {
+		recipientHost = "http://" + recipientHost
+	}
+
+	record.Set("senderName", senderName)
+	record.Set("senderHost", senderHost)
+	record.Set("recipientName", recipientName)
+	record.Set("recipientHost", recipientHost)
+
+	// scan users collection for matching recipient email
+	// if no error, set the recipient field to the user record id
+	if userRecord, err := bkd.App.FindFirstRecordByFilter("users", "mailName = {:recipient}", dbx.Params{ "recipient": recipientName }); err == nil {
+		record.Set("recipient", userRecord.Id)
+	}
 
 	if err := bkd.App.Save(record); err != nil {
 		return err
