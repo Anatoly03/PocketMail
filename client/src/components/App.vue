@@ -1,15 +1,21 @@
 <template>
     <div id="app">
-        <router-view />
+        <n-loading-bar-provider :to="loadingBarRef" container-style="position: absolute;">
+            <router-view />
+        </n-loading-bar-provider>
     </div>
 </template>
 
 <script lang="ts" setup>
 import pb from "../services/api";
+import { ref } from "vue";
+import { NLoadingBarProvider } from "naive-ui";
 import NotFound from "./NotFound.vue";
 import ViewAuth from "./auth/ViewAuth.vue";
 import ViewHome from "./mail/ViewHome.vue";
 
+const loadingBarRef = ref<undefined | HTMLElement>(undefined);
+    
 defineOptions({
     routes: [
         { path: "/", component: () => (pb.authStore.isValid ? ViewHome : ViewAuth), children: ViewHome.routes },

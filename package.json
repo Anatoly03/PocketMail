@@ -1,7 +1,13 @@
 {
-    "workspaces": ["client", "other"],
+    "workspaces": [
+        "client",
+        "other"
+    ],
     "scripts": {
         "serve": "npm run dev --workspace=client",
         "flood": "npm run flood --workspace=other"
+    },
+    "dependencies": {
+        "pocketbase": "^0.26.8"
     }
 }

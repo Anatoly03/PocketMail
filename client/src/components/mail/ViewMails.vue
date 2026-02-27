@@ -32,10 +32,11 @@ import pb from "../../services/api";
 import { h, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import type { DataTableColumns, DataTableRowKey, PaginationInfo, PaginationProps } from "naive-ui";
-import { NSplit, NDataTable, NIcon } from "naive-ui";
+import { NSplit, NDataTable, NIcon, useLoadingBar } from "naive-ui";
 import { MailAllRead20Regular } from "@vicons/fluent";
 import { FilterState, InternalRowData, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
 
+const loadingBar = useLoadingBar();
 const router = useRouter();
 
 /**
@@ -203,19 +204,23 @@ function updateSorter(sorter: any) {
 }
 
 /**
- * On Mount
- */
-onMounted(async () => {
-    await query(0);
-});
-
-/**
  * Render a cell in the table. This function only overrides `subject` column
  * to make it a link to the mail view page.
  */
 const rowProps = (row: RowData) => ({
     style: { cursor: "pointer" },
-    onClick: () => router.push(`/mail/${row.id}`),
+    onClick: async () => {
+        loadingBar.start();
+        const res = await router.push(`/mail/${row.id}`);
+        if (!res) loadingBar.error();
+    },
+});
+
+/**
+ * On Mount
+ */
+onMounted(async () => {
+    await query(0);
 });
 </script>
 

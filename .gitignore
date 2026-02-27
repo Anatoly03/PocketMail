@@ -2,6 +2,9 @@
 pb_data
 go.sum
 
+# back end (binary)
+api/pocketmail-api
+
 # node
 node_modules
 dist

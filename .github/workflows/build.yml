@@ -1,0 +1,76 @@
+# Builds the project, floods the database with fake emails,
+# and starts the server for preview image, which will be uploaded
+# as an artifact for use in release workflow and README.
+
+name: Build and Preview
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Build the backend
+      # TODO: build api
+
+      - name: Build API
+        run: |
+          cd api
+          go build -o pocketmail-api ./src/main.go
+
+      # Build the client
+      - name: Install dependencies
+        run: npm ci
+      - name: Build the project
+        run: npm run build
+
+      # Start the api server in the background
+
+      - name: Start API server
+        run: |
+          cd api
+          ./pocketmail-api serve &
+          echo $! > ../api-server.pid
+          cd ..
+
+      # Create test user and generate auth token
+      - name: Create test user and save token
+        id: create_test_user
+        run: |
+          TOKEN=$(npx tsx other/createTestUser.ts)
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      # Flood the database and start the server for preview
+      - name: Flood the database with fake emails
+        run: npm run flood -- --no-ask
+
+      # Create a screenshot of the app
+      - uses: karol-brejna-i/webpage-screenshot-action@v1
+        with:
+          url: file://${{github.workspace}}/dist/index.html?token=${{ steps.create_test_user.outputs.token }}
+          output: screenshot.png
+
+      # Upload the screenshot as an artifact
+      - uses: actions/upload-artifact@v3
+        with:
+          name: simple-screenshot
+          path: ${{ github.workspace }}/*.png
+
+      # Stop the server, even if job fails.
+      - name: Stop API server
+        if: always()
+        run: |
+          if [ -f api-server.pid ]; then
+            kill $(cat api-server.pid) || true
+            rm api-server.pid
+          fi

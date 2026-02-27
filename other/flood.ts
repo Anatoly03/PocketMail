@@ -16,20 +16,28 @@ const transporter = nodemailer.createTransport({
     newline: "unix",
 })
 
-function questionPromise(query: string): Promise<string> {
+function questionPromise(query: string, defaultAnswer: string): Promise<string> {
+    const noAsk = process.argv.includes("--no-ask")
+
     return new Promise((resolve) => {
-        rl.question(query + ": ", (answer) => {
-            resolve(answer)
-        })
+        if (noAsk) {
+            resolve(defaultAnswer)
+        } else {
+            rl.question(query + ": ", (answer) => {
+                resolve(answer || defaultAnswer)
+            })
+        }
     })
 }
 
 async function generateFake() {
-    let to = await questionPromise("Email")
-    const amountString = await questionPromise("Amount")
+    let to = await questionPromise("Email", "test@localhostt")
+    let toName = to.split("@")[0]
+    const amountString = await questionPromise("Amount", "10")
     const amount = parseInt(amountString, 10)
 
     if (!to.includes("@")) {
+        toName = to
         to += "@localhost"
     }
 
@@ -39,8 +47,14 @@ async function generateFake() {
         const fakeEmail = faker.internet.email({ firstName, lastName })
 
         const subject = faker.lorem.sentence()
-        const text = faker.lorem.paragraph()
         const sent = faker.date.past().toISOString()
+        
+        const randomBody = faker.lorem.paragraphs({ min: 1, max: 20 })
+            .split('\n')
+            .map((p) => `<p>${faker.lorem.words({ min: p.split(' ').length, max: p.split(' ').length * 6 })}</p>`)
+            .join('')
+        const toNameCapitalized = toName.charAt(0).toUpperCase() + toName.slice(1)
+        const text = `<p>Dear ${toNameCapitalized},</p>${randomBody} <p>Best Regards,<br>${firstName} ${lastName}</p>`
 
         const info = await transporter.sendMail({
             from: `${firstName} ${lastName} <${fakeEmail}>`, // Visible From: header
