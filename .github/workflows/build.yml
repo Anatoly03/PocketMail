@@ -64,8 +64,7 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      # Start the api server in the background
-
+      # Serve the api server in the background
       - name: Start API server
         run: |
           cd api
@@ -84,6 +83,7 @@ jobs:
       - name: Flood the database with fake emails
         run: npm run flood --workspace=other -- --no-ask
 
+      # Serve the client server in the background
       - name: Start client server
         run: |
           cd api
@@ -102,6 +102,14 @@ jobs:
         with:
           name: simple-screenshot
           path: ${{ github.workspace }}/*.png
+
+      # If previous commands fail, print server logs.
+      - name: Print API server logs
+        if: failure()
+        run: |
+          if [ -f api-server.pid ]; then
+              cat /proc/$(cat api-server.pid)/fd/1 || true
+          fi
 
       # Stop the api server, even if job fails.
       # Compliance with GitHub ToS: No long-running processes after the job finishes.
