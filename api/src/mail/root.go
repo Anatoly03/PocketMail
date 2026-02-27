@@ -4,6 +4,7 @@ import (
 	// "fmt"
 	"io"
 	"net/mail"
+	"os"
 	"strings"
 
 	// "strconv"
@@ -30,15 +31,16 @@ func (bkd *MailServer) NewSession(c *smtp.Conn) (smtp.Session, error) {
 func (bkd *MailServer) Serve() error {
 	s := smtp.NewServer(bkd)
 
-	s.Addr = ":1025"
+	s.Addr = os.Getenv("SMTP_PORT")
 	// s.Addr = bkd.App.Settings().SMTP.Host + ":" + strconv.Itoa(bkd.App.Settings().SMTP.Port)
 	// s.Domain = bkd.App.Settings().SMTP.Host
 	s.AllowInsecureAuth = true
 
+	bkd.App.Logger().Info("Starting SMTP server on " + s.Addr)
 	return s.ListenAndServe()
 }
 
-// / MailSession represents an SMTP session for handling incoming email
+// MailSession represents an SMTP session for handling incoming email
 // transactions. It implements the `smtp.Session` interface.
 type MailSession struct {
 	App       *pocketbase.PocketBase
@@ -100,6 +102,8 @@ func (bkd *MailSession) Data(r io.Reader) error {
 		return err
 	}
 
+	bkd.App.Logger().Info("Received message", "Message-Id", headers["Message-Id"], "From", headers["From"], "To", headers["To"])
+
 	// write to collection
 	collection, err := bkd.App.FindCollectionByNameOrId("mails")
 	if err != nil {
@@ -126,7 +130,7 @@ func (bkd *MailSession) Data(r io.Reader) error {
 		record.Set("owner", userRecord.Id)
 	}
 
-	bkd.App.Logger().Info("Received message", "Message-Id", headers["Message-Id"], "From", headers["From"], "To", headers["To"], "Assigned Owner", record.GetString("owner"))
+	bkd.App.Logger().Info("Redirecting message", "Message-Id", headers["Message-Id"], "Assigned Owner", record.GetString("owner"))
 
 	if err := bkd.App.Save(record); err != nil {
 		return err

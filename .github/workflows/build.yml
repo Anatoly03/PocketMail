@@ -50,7 +50,7 @@ jobs:
         run: |
           cd api
           go run src/main.go migrate
-          go build -o pocketmail-api src/main.go
+          SMTP_PORT=:1025 go build -o pocketmail-api src/main.go
 
       # Build the client
       - name: Install dependencies
