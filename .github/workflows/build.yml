@@ -50,7 +50,7 @@ jobs:
         run: |
           cd api
           go run src/main.go migrate
-          SMTP_PORT=:1025 go build -o pocketmail-api src/main.go
+          go build -o pocketmail-api src/main.go
 
       # Build the client
       - name: Install dependencies
@@ -63,7 +63,7 @@ jobs:
       - name: Start API server
         run: |
           cd api
-          ./pocketmail-api serve > ../api-server.log 2> ../api-server.err &
+          SMTP_PORT=:1025 ./pocketmail-api serve > ../api-server.log 2> ../api-server.err &
           echo $! > ../api-server.pid
           cd ..
 
