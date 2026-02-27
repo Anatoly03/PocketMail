@@ -1,7 +1,7 @@
 package mail
 
 import (
-	"fmt"
+	// "fmt"
 	"io"
 	"net/mail"
 	"strings"
@@ -57,24 +57,24 @@ func (bkd *MailSession) Logout() error {
 
 // Set return path for currently processed message.
 func (bkd *MailSession) Mail(from string, opts *smtp.MailOptions) error {
-	fmt.Printf("from: `%s`\n", from)
-	fmt.Printf("auth: %v\n", opts.Auth)
-	fmt.Printf("body type: %v\n", opts.Body)
-	fmt.Printf("envelope id: %s\n", opts.EnvelopeID)
-	fmt.Printf("require tls: %v\n", opts.RequireTLS)
+	// fmt.Printf("from: `%s`\n", from)
+	// fmt.Printf("auth: %v\n", opts.Auth)
+	// fmt.Printf("body type: %v\n", opts.Body)
+	// fmt.Printf("envelope id: %s\n", opts.EnvelopeID)
+	// fmt.Printf("require tls: %v\n", opts.RequireTLS)
 
 	return nil
 }
 
 // Add recipient for currently processed message.
 func (bkd *MailSession) Rcpt(to string, opts *smtp.RcptOptions) error {
-	fmt.Printf("to: `%s`\n", to)
-	fmt.Printf("DeliverBy: %v\n", opts.DeliverBy)
-	fmt.Printf("MTPriority: %v\n", opts.MTPriority)
-	fmt.Printf("Notify: %v\n", opts.Notify)
-	fmt.Printf("OriginalRecipient: %v\n", opts.OriginalRecipient)
-	fmt.Printf("OriginalRecipientType: %v\n", opts.OriginalRecipientType)
-	fmt.Printf("RequireRecipientValidSince: %v\n", opts.RequireRecipientValidSince)
+	// fmt.Printf("to: `%s`\n", to)
+	// fmt.Printf("DeliverBy: %v\n", opts.DeliverBy)
+	// fmt.Printf("MTPriority: %v\n", opts.MTPriority)
+	// fmt.Printf("Notify: %v\n", opts.Notify)
+	// fmt.Printf("OriginalRecipient: %v\n", opts.OriginalRecipient)
+	// fmt.Printf("OriginalRecipientType: %v\n", opts.OriginalRecipientType)
+	// fmt.Printf("RequireRecipientValidSince: %v\n", opts.RequireRecipientValidSince)
 
 	return nil
 }
