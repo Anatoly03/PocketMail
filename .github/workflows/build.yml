@@ -106,7 +106,7 @@ jobs:
 
             // Wait for the app to load and display emails (synchronous block for few seconds)
             const start = Date.now();
-            while (Date.now() - start < 1000) {}
+            while (Date.now() - start < 5000) {}
 
       # Upload the screenshot as an artifact
       - uses: actions/upload-artifact@v4
