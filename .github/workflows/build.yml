@@ -105,6 +105,7 @@ jobs:
           path: ${{ github.workspace }}/*.png
 
       # Stop the api server, even if job fails.
+      # Compliance with GitHub ToS: No long-running processes after the job finishes.
       - name: Stop API server
         if: always()
         run: |
@@ -114,6 +115,7 @@ jobs:
           fi
 
       # Stop the client server, even if job fails.
+      # Compliance with GitHub ToS: No long-running processes after the job finishes.
       - name: Stop client server
         if: always()
         run: |
