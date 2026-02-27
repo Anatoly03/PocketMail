@@ -1,5 +1,4 @@
 import PocketBase from "pocketbase";
-import { useRoute } from "vue-router";
 // import type { AuthRecord } from "pocketbase";
 // import { useLocalStorage } from "@vueuse/core";
 
