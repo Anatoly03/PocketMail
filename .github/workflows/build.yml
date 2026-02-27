@@ -61,7 +61,7 @@ jobs:
           output: screenshot.png
 
       # Upload the screenshot as an artifact
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: simple-screenshot
           path: ${{ github.workspace }}/*.png
