@@ -10,22 +10,8 @@ import PocketBase from "pocketbase";
 // PocketBase client instance
 const pb = new PocketBase(import.meta.env.VITE_API_ROUTE);
 
-function getTokenFromUrl(): string | null {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    return token && token.length > 0 ? token : null;
-}
-
 (async () => {
     try {
-        // allow preview mode by passing the token in the query params
-        // TODO: think about security implications
-        // TODO: import.meta.env.MODE !== "production"
-        const token = getTokenFromUrl();
-        if (token) {
-            pb.authStore.save(token, undefined);
-        }
-
         // if (!pbAuthLocalStore.value.token) return;
         // pb.authStore.save(pbAuthLocalStore.value.token, pbAuthLocalStore.value.record);
 

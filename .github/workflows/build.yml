@@ -93,8 +93,15 @@ jobs:
       # Create a screenshot of the app
       - uses: karol-brejna-i/webpage-screenshot-action@v1
         with:
-          url: http://localhost:3000/?token=${{ steps.create_test_user.outputs.token }}
+          url: http://localhost:3000/
           output: screenshot.png
+          scriptBefore: |
+            // Set PocketBase auth token in localStorage
+            localStorage.setItem('pocketbase_auth', JSON.stringify({ token: '${{ steps.create_test_user.outputs.token }}' }));
+            // Reload the page to apply auth
+            location.reload();
+            // Wait for 5 seconds after reload
+            await new Promise(resolve => setTimeout(resolve, 5000));
 
       # Upload the screenshot as an artifact
       - uses: actions/upload-artifact@v4
