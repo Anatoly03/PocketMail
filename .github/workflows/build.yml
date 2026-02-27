@@ -53,7 +53,7 @@ jobs:
         run: npm ci
 
       - name: Build the project
-        run: npm run build --workspace=client
+        run: VITE_ALLOW_AUTO_LOGIN=1 npm run build --workspace=client
 
       # Serve the api server in the background
       - name: Start API server
@@ -80,26 +80,13 @@ jobs:
           npx serve -s client/dist -l 3000 &
           echo $! > ../client-server.pid
 
-      
-
       # Create a screenshot of the app
       - uses: karol-brejna-i/webpage-screenshot-action@v1
         with:
-          url: http://localhost:3000/
+          url: http://localhost:3000/?token=${{ steps.create_test_user.outputs.token }}
           output: screenshot.png
           scriptBefore: |
-            // Fill username and password fields
-            document.querySelector('input[autocomplete*="username"]').value = 'test@example.com';
-            document.querySelector('input[type="password"]').value = 'password';
-
-            // Trigger input events to update Vue's v-model
-            document.querySelector('input[autocomplete*="username"]').dispatchEvent(new Event('input'));
-            document.querySelector('input[type="password"]').dispatchEvent(new Event('input'));
-
-            // Click the submit button (by text or type)
-            [...document.querySelectorAll('button, .n-button')].find(btn => btn.textContent?.trim() === 'Success')?.click();
-
-            // Wait for the app to load and display emails (synchronous block for few seconds)
+            // Wait for the app to load and display emails (synchronous block for 5 seconds)
             const start = Date.now();
             while (Date.now() - start < 5000) {}
 
