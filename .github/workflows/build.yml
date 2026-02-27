@@ -100,16 +100,6 @@ jobs:
           name: simple-screenshot
           path: ${{ github.workspace }}/*.png
 
-      # If previous commands fail, print server logs.
-      - name: Print API server logs
-        run: |
-          if [ -f api-server.pid ]; then
-            echo "--- API server stdout (last 100 lines) ---"
-            tail -n 100 /proc/$(cat api-server.pid)/fd/1 || true
-            echo "--- API server stderr (last 100 lines) ---"
-            tail -n 100 /proc/$(cat api-server.pid)/fd/2 || true
-          fi
-
       # Stop the api server, even if job fails.
       # Compliance with GitHub ToS: No long-running processes after the job finishes.
       - name: Stop API server
@@ -118,6 +108,16 @@ jobs:
           if [ -f api-server.pid ]; then
             kill $(cat api-server.pid) || true
             rm api-server.pid
+          fi
+
+      # Print server logs after the process is killed.
+      - name: Print API server logs
+        run: |
+          if [ -f api-server.pid ]; then
+            echo "--- API server stdout (last 100 lines) ---"
+            tail -n 100 /proc/$(cat api-server.pid)/fd/1 || true
+            echo "--- API server stderr (last 100 lines) ---"
+            tail -n 100 /proc/$(cat api-server.pid)/fd/2 || true
           fi
 
       # Stop the client server, even if job fails.
