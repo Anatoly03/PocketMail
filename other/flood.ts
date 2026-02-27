@@ -41,6 +41,8 @@ async function generateFake() {
         to += "@localhost"
     }
 
+    console.debug(`sending ${amount} emails to: \`${to}\``)
+
     for (let i = 0; i < amount; i++) {
         const firstName = faker.person.firstName()
         const lastName = faker.person.lastName()
@@ -68,10 +70,8 @@ async function generateFake() {
             text,
         })
 
-        if (noAsk) {
+        if (!noAsk) {
             console.log(info.messageId)
-        } else {
-            console.log(info)
         }
     }
 
