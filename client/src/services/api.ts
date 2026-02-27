@@ -1,6 +1,6 @@
 import PocketBase from "pocketbase";
-import type { AuthRecord } from "pocketbase";
-import { useLocalStorage } from "@vueuse/core";
+// import type { AuthRecord } from "pocketbase";
+// import { useLocalStorage } from "@vueuse/core";
 
 // /**
 //  *  Save ~~multiple logins~~ **currently one login** in local storage.

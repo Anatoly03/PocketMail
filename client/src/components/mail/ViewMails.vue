@@ -9,7 +9,6 @@
             @update:page="openPage"
             @update:filters="updateFilters"
             @update:sorter="updateSorter"
-            :render-cell="renderRow"
             :row-key="(row) => row.id"
             :row-props="rowProps"
             flex-height
@@ -29,12 +28,12 @@
 
 <script lang="ts" setup>
 import pb from "../../services/api";
-import { h, onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import type { DataTableColumns, DataTableRowKey, PaginationInfo, PaginationProps } from "naive-ui";
-import { NSplit, NDataTable, NIcon, useLoadingBar } from "naive-ui";
+import type { DataTableColumns, PaginationProps } from "naive-ui";
+import { NDataTable, NIcon, useLoadingBar } from "naive-ui";
 import { MailAllRead20Regular } from "@vicons/fluent";
-import { FilterState, InternalRowData, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
+import { FilterState, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
 
 const loadingBar = useLoadingBar();
 const router = useRouter();
@@ -77,7 +76,7 @@ const pb_sort = ref<string>("-created");
 const columns: DataTableColumns<RowData> = [
     {
         type: "selection",
-        disabled(row: RowData) {
+        disabled(_: RowData) {
             return false;
         },
     },

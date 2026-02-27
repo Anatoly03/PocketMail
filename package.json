@@ -5,6 +5,7 @@
     ],
     "scripts": {
         "serve": "npm run dev --workspace=client",
+        "build": "npm run build --workspace=client",
         "flood": "npm run flood --workspace=other"
     },
     "dependencies": {

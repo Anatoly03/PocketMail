@@ -5,6 +5,7 @@ pb_data
 api/pocketmail-api
 
 # node
+*.tsbuildinfo
 node_modules
 dist
 
