@@ -3,6 +3,8 @@ import readline from "node:readline"
 import { faker } from "@faker-js/faker"
 import * as nodemailer from "nodemailer"
 
+const noAsk = process.argv.includes("--no-ask")
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -17,8 +19,6 @@ const transporter = nodemailer.createTransport({
 })
 
 function questionPromise(query: string, defaultAnswer: string): Promise<string> {
-    const noAsk = process.argv.includes("--no-ask")
-
     return new Promise((resolve) => {
         if (noAsk) {
             resolve(defaultAnswer)
@@ -68,7 +68,11 @@ async function generateFake() {
             text,
         })
 
-        console.log(info)
+        if (noAsk) {
+            console.log(info.messageId)
+        } else {
+            console.log(info)
+        }
     }
 
     rl.close()
