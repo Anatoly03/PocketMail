@@ -14,7 +14,38 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            client/node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Cache TypeScript build info
+        uses: actions/cache@v3
+        with:
+          path: |
+            client/.tsbuildinfo
+            .tsbuildinfo
+          key: ${{ runner.os }}-tsbuildinfo-${{ hashFiles('**/.tsbuildinfo') }}
+          restore-keys: |
+            ${{ runner.os }}-tsbuildinfo-
+
       - uses: actions/checkout@v3
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -52,12 +83,19 @@ jobs:
 
       # Flood the database and start the server for preview
       - name: Flood the database with fake emails
-        run: npm run flood -- --no-ask
+        run: npm run flood --workspace=other -- --no-ask
+
+      - name: Start client server
+        run: |
+          cd api
+          npx serve -s dist -l 3000 &
+          echo $! > ../client-server.pid
+          cd ..
 
       # Create a screenshot of the app
       - uses: karol-brejna-i/webpage-screenshot-action@v1
         with:
-          url: file://${{github.workspace}}/dist/index.html?token=${{ steps.create_test_user.outputs.token }}
+          url: http://localhost:3000?token=${{ steps.create_test_user.outputs.token }}
           output: screenshot.png
 
       # Upload the screenshot as an artifact
@@ -66,11 +104,20 @@ jobs:
           name: simple-screenshot
           path: ${{ github.workspace }}/*.png
 
-      # Stop the server, even if job fails.
+      # Stop the api server, even if job fails.
       - name: Stop API server
         if: always()
         run: |
           if [ -f api-server.pid ]; then
             kill $(cat api-server.pid) || true
             rm api-server.pid
+          fi
+
+      # Stop the client server, even if job fails.
+      - name: Stop client server
+        if: always()
+        run: |
+          if [ -f client-server.pid ]; then
+            kill $(cat client-server.pid) || true
+            rm client-server.pid
           fi

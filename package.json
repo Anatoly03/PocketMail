@@ -9,6 +9,7 @@
         "flood": "npm run flood --workspace=other"
     },
     "dependencies": {
-        "pocketbase": "^0.26.8"
+        "pocketbase": "^0.26.8",
+        "tsx": "^4.21.0"
     }
 }

@@ -33,7 +33,7 @@ function questionPromise(query: string, defaultAnswer: string): Promise<string> 
 async function generateFake() {
     let to = await questionPromise("Email", "test@localhostt")
     let toName = to.split("@")[0]
-    const amountString = await questionPromise("Amount", "10")
+    const amountString = await questionPromise("Amount", "50")
     const amount = parseInt(amountString, 10)
 
     if (!to.includes("@")) {
