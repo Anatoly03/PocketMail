@@ -208,7 +208,12 @@ function updateSorter(sorter: any) {
  */
 const rowProps = (row: RowData) => ({
     style: { cursor: "pointer" },
-    onClick: async () => {
+    onClick: async (event: MouseEvent) => {
+        // If the click is on a checkbox, don't navigate to the mail view page
+        if ((event.target as HTMLElement).closest('[data-col-key="__n_selection__"]')) {
+            return;
+        }
+
         loadingBar.start();
         const res = await router.push(`/mail/${row.id}`);
         if (!res) loadingBar.error();
