@@ -1,6 +1,5 @@
 # back end
 pb_data
-go.sum
 
 # back end (binary)
 api/pocketmail-api
