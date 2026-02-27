@@ -63,7 +63,7 @@ jobs:
       - name: Start API server
         run: |
           cd api
-          ./pocketmail-api serve &
+          ./pocketmail-api serve > ../api-server.log 2> ../api-server.err &
           echo $! > ../api-server.pid
           cd ..
 
@@ -108,10 +108,10 @@ jobs:
           if [ -f api-server.pid ]; then
             kill $(cat api-server.pid) || true
             echo "--- API server stdout (last 100 lines) ---"
-            tail -n 100 /proc/$(cat api-server.pid)/fd/1 || true
+            tail -n 100 api-server.log || true
             echo "--- API server stderr (last 100 lines) ---"
-            tail -n 100 /proc/$(cat api-server.pid)/fd/2 || true
-            rm api-server.pid
+            tail -n 100 api-server.err || true
+            rm api-server.log api-server.err api-server.pid
           fi
 
       # Stop the client server, even if job fails.
