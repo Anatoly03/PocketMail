@@ -50,10 +50,13 @@ type MailSession struct {
 }
 
 // Discard currently processed message.
-func (bkd *MailSession) Reset() {}
+func (bkd *MailSession) Reset() {
+	bkd.App.Logger().Info("Mail `RESET`")
+}
 
 // Free all resources associated with session.
 func (bkd *MailSession) Logout() error {
+	bkd.App.Logger().Info("Mail `LOGOUT`")
 	return nil
 }
 
@@ -64,6 +67,8 @@ func (bkd *MailSession) Mail(from string, opts *smtp.MailOptions) error {
 	// fmt.Printf("body type: %v\n", opts.Body)
 	// fmt.Printf("envelope id: %s\n", opts.EnvelopeID)
 	// fmt.Printf("require tls: %v\n", opts.RequireTLS)
+
+	bkd.App.Logger().Info("Mail `MAIL`", "From", from)
 
 	return nil
 }
@@ -77,6 +82,8 @@ func (bkd *MailSession) Rcpt(to string, opts *smtp.RcptOptions) error {
 	// fmt.Printf("OriginalRecipient: %v\n", opts.OriginalRecipient)
 	// fmt.Printf("OriginalRecipientType: %v\n", opts.OriginalRecipientType)
 	// fmt.Printf("RequireRecipientValidSince: %v\n", opts.RequireRecipientValidSince)
+
+	bkd.App.Logger().Info("Mail `RCPT`", "To", to)
 
 	return nil
 }
