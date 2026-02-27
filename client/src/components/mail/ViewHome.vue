@@ -1,24 +1,32 @@
 <template>
     <div class="view-home">
-        <n-split v-model:size="splitLeft">
+        <n-split v-model:size="splitNav" direction="vertical">
             <template #1>
-                <!-- 
+                Top nav
+            </template>
+            <template #2>
+                <n-split v-model:size="splitLeft">
+                    <template #1>
+                        Sidebar
+                        <!-- 
         <n-tabs key="home-tabs" type="card" animated placement="left">
             <n-tab-pane name="oasis" tab="All"> All Mails </n-tab-pane>
             <n-tab-pane name="the beatles" tab="Junk"> Junk Mails </n-tab-pane>
             <n-tab-pane name="jay chou" tab="Sent"> Sent Mails </n-tab-pane>
         </n-tabs> -->
-            </template>
-            <template #2>
-                <router-view></router-view>
-                <!-- <n-split v-model:size="splitRight">
-                    <template #1>
-                        <view-mails />
                     </template>
                     <template #2>
-                        Right pane
+                        <router-view></router-view>
+                        <!-- <n-split v-model:size="splitRight">
+                            <template #1>
+                                <view-mails />
+                            </template>
+                            <template #2>
+                                Right pane
+                            </template>
+                        </n-split> -->
                     </template>
-                </n-split> -->
+                </n-split>
             </template>
         </n-split>
     </div>
@@ -31,6 +39,7 @@ import { NSplit } from "naive-ui";
 import ViewMails from "./ViewMails.vue";
 import ViewSingleMail from "./ViewSingleMail.vue";
 
+const splitNav = ref<number>(50 / window.innerHeight); // 50px
 const splitLeft = ref<number>(0.2);
 
 defineOptions({
