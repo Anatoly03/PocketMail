@@ -126,6 +126,8 @@ func (bkd *MailSession) Data(r io.Reader) error {
 		record.Set("owner", userRecord.Id)
 	}
 
+	bkd.App.Logger().Info("Received message", "Message-Id", headers["Message-Id"], "From", headers["From"], "To", headers["To"], "Assigned Owner", record.GetString("owner"))
+
 	if err := bkd.App.Save(record); err != nil {
 		return err
 	}
