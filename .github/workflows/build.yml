@@ -98,10 +98,13 @@ jobs:
 
       # If previous commands fail, print server logs.
       - name: Print API server logs
-        if: failure()
+        if: always()
         run: |
           if [ -f api-server.pid ]; then
-              cat /proc/$(cat api-server.pid)/fd/1 || true
+            echo "--- API server stdout ---"
+            cat /proc/$(cat api-server.pid)/fd/1 || true
+            echo "--- API server stderr ---"
+            cat /proc/$(cat api-server.pid)/fd/2 || true
           fi
 
       # Stop the api server, even if job fails.
