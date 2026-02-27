@@ -34,16 +34,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      - name: Cache TypeScript build info
-        uses: actions/cache@v3
-        with:
-          path: |
-            client/.tsbuildinfo
-            .tsbuildinfo
-          key: ${{ runner.os }}-tsbuildinfo-${{ hashFiles('**/.tsbuildinfo') }}
-          restore-keys: |
-            ${{ runner.os }}-tsbuildinfo-
-
       - uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -98,11 +88,16 @@ jobs:
           url: http://localhost:3000/
           output: screenshot.png
           scriptBefore: |
-            // Set PocketBase auth token in localStorage
-            localStorage.setItem('pocketbase_auth', JSON.stringify({ token: '${{ steps.create_test_user.outputs.token }}' }));
+            // Fill username and password fields
+            document.querySelector('input[autocomplete*="username"]').value = 'test@example.com';
+            document.querySelector('input[type="password"]').value = 'password';
 
-            // Reload the page to apply auth
-            location.reload();
+            // Trigger input events to update Vue's v-model
+            document.querySelector('input[autocomplete*="username"]').dispatchEvent(new Event('input'));
+            document.querySelector('input[type="password"]').dispatchEvent(new Event('input'));
+
+            // Click the submit button (by text or type)
+            [...document.querySelectorAll('button, .n-button')].find(btn => btn.textContent?.trim() === 'Success')?.click();
 
             // Wait for the app to load and display emails (synchronous block for few seconds)
             const start = Date.now();
