@@ -29,12 +29,11 @@
 <script lang="ts" setup>
 import pb from "../../services/api";
 import { onMounted, reactive, ref } from "vue";
-import type { VNodeChild } from "vue";
 import { useRouter } from "vue-router";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
 import { NDataTable, NIcon, useLoadingBar } from "naive-ui";
 import { MailAllRead20Regular } from "@vicons/fluent";
-import { FilterState, InternalRowData, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
+import { FilterState, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
 import { h } from "vue";
 import CheckboxFavorite from "./CheckboxFavorite.vue";
 
@@ -218,7 +217,7 @@ async function openPage(page: number) {
 /**
  * Update the filters in the table.
  */
-function updateFilters(filterState: FilterState, sourceColumn: TableBaseColumn) {
+function updateFilters(filterState: FilterState, _: TableBaseColumn) {
     switch (filterState.isFavorite) {
         case "true":
             pb_filter.value = 'isFavorite=true';
