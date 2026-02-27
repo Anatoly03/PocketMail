@@ -10,6 +10,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
+
+	_ "pocketmail-api/migrations"
 )
 
 var IsDev = strings.HasPrefix(os.Args[0], os.TempDir())
