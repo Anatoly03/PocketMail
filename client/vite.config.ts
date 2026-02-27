@@ -1,14 +1,11 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
-import vueDevTools from 'vite-plugin-vue-devtools';
+import vueDevTools from "vite-plugin-vue-devtools";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [
-        vueDevTools(),
-        vue()
-    ],
+    plugins: [vueDevTools(), vue()],
     resolve: {
         alias: {
             "@": resolve(__dirname, "src"),
@@ -16,8 +13,5 @@ export default defineConfig({
     },
     server: {
         port: 8080,
-        allowedHosts: [
-            '.teaspill.tech'
-        ],
     },
 });
