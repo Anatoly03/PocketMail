@@ -10,28 +10,35 @@
         </n-tabs> -->
             </template>
             <template #2>
-                <n-split v-model:size="splitRight">
+                <router-view></router-view>
+                <!-- <n-split v-model:size="splitRight">
                     <template #1>
                         <view-mails />
                     </template>
                     <template #2>
                         Right pane
                     </template>
-                </n-split>
+                </n-split> -->
             </template>
         </n-split>
     </div>
 </template>
 
 <script lang="ts" setup>
-import pb from "../services/api";
-import { onMounted, reactive, ref } from "vue";
-import { NSplit, NDataTable } from "naive-ui";
-import type { DataTableColumns, DataTableRowKey, PaginationInfo } from "naive-ui";
+import { ref } from "vue";
+import { NSplit } from "naive-ui";
+
 import ViewMails from "./ViewMails.vue";
+import ViewSingleMail from "./ViewSingleMail.vue";
 
 const splitLeft = ref<number>(0.2);
-const splitRight = ref<number>(0.95);
+
+defineOptions({
+    routes: [
+        { path: "", component: ViewMails },
+        { path: "mail/:id", component: ViewSingleMail },
+    ],
+});
 </script>
 
 <style lang="scss" scoped>

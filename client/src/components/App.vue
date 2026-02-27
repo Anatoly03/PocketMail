@@ -8,12 +8,11 @@
 import pb from "../services/api";
 import NotFound from "./NotFound.vue";
 import ViewAuth from "./auth/ViewAuth.vue";
-import ViewHome from "./ViewHome.vue";
+import ViewHome from "./mail/ViewHome.vue";
 
 defineOptions({
     routes: [
-        { path: "/", component: () => (pb.authStore.isValid ? ViewHome : ViewAuth) },
-        { path: "/", component: ViewHome },
+        { path: "/", component: () => (pb.authStore.isValid ? ViewHome : ViewAuth), children: ViewHome.routes },
         { path: "/:pathMatch(.*)*", component: NotFound },
     ],
 });
