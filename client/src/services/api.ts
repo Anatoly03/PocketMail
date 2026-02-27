@@ -1,6 +1,9 @@
 import PocketBase from "pocketbase";
+import { useRoute } from "vue-router";
 // import type { AuthRecord } from "pocketbase";
 // import { useLocalStorage } from "@vueuse/core";
+
+const route = useRoute();
 
 // /**
 //  *  Save ~~multiple logins~~ **currently one login** in local storage.
@@ -12,6 +15,13 @@ const pb = new PocketBase(import.meta.env.VITE_API_ROUTE);
 
 (async () => {
     try {
+        // allow preview mode by passing the token in the query params
+        // TODO: think about security implications
+        // TODO: import.meta.env.MODE !== "production"
+        if (route.query.token) {
+            pb.authStore.save(String(route.query.token), undefined);
+        }
+
         // if (!pbAuthLocalStore.value.token) return;
         // pb.authStore.save(pbAuthLocalStore.value.token, pbAuthLocalStore.value.record);
 

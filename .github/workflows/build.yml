@@ -61,8 +61,9 @@ jobs:
       # Build the client
       - name: Install dependencies
         run: npm ci
+
       - name: Build the project
-        run: npm run build
+        run: npm run build --workspace=client
 
       # Serve the api server in the background
       - name: Start API server
@@ -86,15 +87,13 @@ jobs:
       # Serve the client server in the background
       - name: Start client server
         run: |
-          cd api
           npx serve -s dist -l 3000 &
           echo $! > ../client-server.pid
-          cd ..
 
       # Create a screenshot of the app
       - uses: karol-brejna-i/webpage-screenshot-action@v1
         with:
-          url: http://localhost:3000?token=${{ steps.create_test_user.outputs.token }}
+          url: http://localhost:3000/?token=${{ steps.create_test_user.outputs.token }}
           output: screenshot.png
 
       # Upload the screenshot as an artifact
