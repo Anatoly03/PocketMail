@@ -1,6 +1,19 @@
 <template>
     <div class="view-mails">
-        <n-data-table remote :columns="columns" :data="visibleRows" :loading="isLoading" :pagination="pagination" @update:page="openPage" @update:filters="updateFilters" @update:sorter="updateSorter" :row-key="(row) => row.id">
+        <n-data-table
+            remote
+            :columns="columns"
+            :data="visibleRows"
+            :loading="isLoading"
+            :pagination="pagination"
+            @update:page="openPage"
+            @update:filters="updateFilters"
+            @update:sorter="updateSorter"
+            :render-cell="renderRow"
+            :row-key="(row) => row.id"
+            flex-height
+            :style="{ height: `100%` }"
+        >
             <template #empty>
                 <div class="view-no-mails">
                     <n-icon size="40">
@@ -15,11 +28,12 @@
 
 <script lang="ts" setup>
 import pb from "../services/api";
-import { onMounted, reactive, ref } from "vue";
+import { h, onMounted, reactive, ref } from "vue";
 import type { DataTableColumns, DataTableRowKey, PaginationInfo, PaginationProps } from "naive-ui";
 import { NSplit, NDataTable, NIcon } from "naive-ui";
 import { MailAllRead20Regular } from "@vicons/fluent";
-import { FilterState, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
+import { FilterState, InternalRowData, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
+import { VNodeChild } from "vue";
 
 /**
  *
@@ -67,15 +81,23 @@ const columns: DataTableColumns<RowData> = [
         title: "Sender",
         key: "sender",
         sorter: "default",
+        width: 200,
+        ellipsis: {
+            tooltip: true,
+        },
     },
     {
         title: "Subject",
         key: "subject",
         sorter: "default",
+        ellipsis: {
+            tooltip: true,
+        },
     },
     {
         title: "Date",
         key: "created",
+        width: 120,
         sorter: (row1: RowData, row2: RowData) => row1.sent.getTime() - row2.sent.getTime(),
         render(row: RowData) {
             const MINUTE = 60 * 1000; // 1 minute in ms
@@ -168,7 +190,7 @@ function updateFilters(filterState: FilterState, sourceColumn: TableBaseColumn) 
  * Update the sorter in the table.
  */
 function updateSorter(sorter: any) {
-    let new_sort = (sorter.order === 'ascend' ? '+' : '-') + sorter.columnKey;
+    let new_sort = (sorter.order === "ascend" ? "+" : "-") + sorter.columnKey;
     if (new_sort !== pb_sort.value) {
         pb_sort.value = new_sort;
         query(1);
@@ -181,11 +203,43 @@ function updateSorter(sorter: any) {
 onMounted(async () => {
     await query(0);
 });
+
+/**
+ * Render a cell in the table.
+ * This function is used for :render-cell and should return the content for a single cell.
+ */
+function renderRow(value: any, rowData: RowData, column: TableBaseColumn<RowData>): VNodeChild {
+    switch (column.key) {
+        case "sender":
+            return rowData.sender;
+        case "created":
+            // Use the same formatting as in the column definition
+            return columns.find((col) => col.key === "created")?.render?.(rowData) ?? "";
+        case "subject":
+            // return link to the mail view page
+            return h(
+                "a",
+                {
+                    href: `/mails/${rowData.id}`,
+                    style: {
+                        color: "inherit",
+                        textDecoration: "none",
+                        display: "flex",
+                        width: "100%",
+                    },
+                },
+                rowData.subject,
+            );
+        default:
+            return value;
+    }
+}
 </script>
 
 <style lang="scss" scoped>
-.view-home {
+.view-mails {
     width: 100%;
+    height: calc(100% - 32px);
 }
 
 .view-no-mails {
