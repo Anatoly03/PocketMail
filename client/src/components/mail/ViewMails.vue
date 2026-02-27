@@ -29,11 +29,14 @@
 <script lang="ts" setup>
 import pb from "../../services/api";
 import { onMounted, reactive, ref } from "vue";
+import type { VNodeChild } from "vue";
 import { useRouter } from "vue-router";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
 import { NDataTable, NIcon, useLoadingBar } from "naive-ui";
 import { MailAllRead20Regular } from "@vicons/fluent";
-import { FilterState, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
+import { FilterState, InternalRowData, TableBaseColumn } from "naive-ui/es/data-table/src/interface";
+import { h } from "vue";
+import CheckboxFavorite from "./CheckboxFavorite.vue";
 
 const loadingBar = useLoadingBar();
 const router = useRouter();
@@ -44,6 +47,7 @@ const router = useRouter();
 interface RowData {
     id: string;
     sender: string;
+    isFavorite: boolean;
     subject: string;
     sent: Date;
 }
@@ -78,6 +82,21 @@ const columns: DataTableColumns<RowData> = [
         type: "selection",
         disabled(_: RowData) {
             return false;
+        },
+    },
+    {
+        key: 'isFavorite',
+        width: 50,
+        disabled(_: RowData) {
+            return false;
+        },
+        render(row: RowData) {
+            return h(CheckboxFavorite, {
+                isFavorite: row.isFavorite,
+                'onUpdate:isFavorite': (newValue: boolean) => {
+                    pb.collection("mails").update(row.id, { isFavorite: newValue })
+                }
+            });
         },
     },
     {
@@ -162,6 +181,7 @@ async function query(page: number = pagination.page ?? 1) {
         visibleRows.value = res.items.map((item: any) => ({
             id: item.id,
             sender: item.sender,
+            isFavorite: item.isFavorite,
             subject: item.subject,
             sent: new Date(item.created),
         }));
@@ -209,9 +229,18 @@ function updateSorter(sorter: any) {
 const rowProps = (row: RowData) => ({
     style: { cursor: "pointer" },
     onClick: async (event: MouseEvent) => {
-        // If the click is on a checkbox, don't navigate to the mail view page
-        if ((event.target as HTMLElement).closest('[data-col-key="__n_selection__"]')) {
-            return;
+        const selectors = [
+            // If the click is on a checkbox, don't navigate to the mail view page
+            '[data-col-key="__n_selection__"]',
+            // If the click is anywhere inside the favorites column cell, don't navigate to the mail view page.
+            '[data-col-key="favorites"]',
+            'svg',
+        ];
+
+        for (const selector of selectors) {
+            if ((event.target as HTMLElement).closest(selector)) {
+                return;
+            }
         }
 
         loadingBar.start();
@@ -219,6 +248,21 @@ const rowProps = (row: RowData) => ({
         if (!res) loadingBar.error();
     },
 });
+
+// function renderCell(value: any, rowData: object, column: TableBaseColumn<InternalRowData>): VNodeChild {
+//     const row = rowData as RowData;
+
+//     if (column.key === "favorites") {
+//         return h(CheckboxFavorite, {
+//             isFavorite: false, // TODO: replace with actual value from the API
+//             onUpdateIsFavorite(newValue: boolean) {
+//                 console.debug(`Mail ${row.id} favorite status updated:`, newValue);
+//             }
+//         });
+//     }
+
+//     return value;
+// }
 
 /**
  * On Mount
