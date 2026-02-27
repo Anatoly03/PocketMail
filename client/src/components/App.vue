@@ -11,14 +11,17 @@ import pb from "../services/api";
 import { ref } from "vue";
 import { NLoadingBarProvider } from "naive-ui";
 import NotFound from "./NotFound.vue";
-import ViewAuth from "./auth/ViewAuth.vue";
 import ViewHome from "./mail/ViewHome.vue";
 
 const loadingBarRef = ref<undefined | HTMLElement>(undefined);
-    
+
 defineOptions({
     routes: [
-        { path: "/", component: () => (pb.authStore.isValid ? ViewHome : ViewAuth), children: ViewHome.routes },
+        {
+            path: "/",
+            component: () => (pb.authStore.isValid ? import("./mail/ViewHome.vue") : import("./auth/ViewAuth.vue")),
+            children: ViewHome.routes,
+        },
         { path: "/:pathMatch(.*)*", component: NotFound },
     ],
 });

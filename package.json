@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "pocketbase": "^0.26.8",
+        "serve": "^14.2.5",
         "tsx": "^4.21.0"
     }
 }

@@ -87,7 +87,7 @@ jobs:
       # Serve the client server in the background
       - name: Start client server
         run: |
-          npx serve -s dist -l 3000 &
+          npx serve -s client/dist -l 3000 &
           echo $! > ../client-server.pid
 
       # Create a screenshot of the app
