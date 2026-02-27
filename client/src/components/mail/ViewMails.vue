@@ -73,6 +73,7 @@ const pagination = reactive<Partial<PaginationProps>>({
 });
 
 const pb_sort = ref<string>("-created");
+const pb_filter = ref<string| undefined>(undefined);
 
 /**
  * The columns of the table are static.
@@ -86,10 +87,7 @@ const columns: DataTableColumns<RowData> = [
     },
     {
         key: 'isFavorite',
-        width: 50,
-        disabled(_: RowData) {
-            return false;
-        },
+        width: 40,
         render(row: RowData) {
             return h(CheckboxFavorite, {
                 isFavorite: row.isFavorite,
@@ -98,6 +96,18 @@ const columns: DataTableColumns<RowData> = [
                 }
             });
         },
+        filter: 'default',
+        filterMultiple: false,
+        filterOptions: [
+            {
+                label: 'Not Favorite',
+                value: 'false'
+            },
+            {
+                label: 'Favorite',
+                value: 'true'
+            }
+        ],
     },
     {
         title: "Sender",
@@ -175,6 +185,7 @@ async function query(page: number = pagination.page ?? 1) {
     try {
         const res = await pb.collection("mails").getList(page, pagination.pageSize, {
             sort: pb_sort.value,
+            filter: pb_filter.value,
         });
         console.debug(res);
 
@@ -208,7 +219,18 @@ async function openPage(page: number) {
  * Update the filters in the table.
  */
 function updateFilters(filterState: FilterState, sourceColumn: TableBaseColumn) {
-    console.debug("Filters updated:", filterState, sourceColumn);
+    switch (filterState.isFavorite) {
+        case "true":
+            pb_filter.value = 'isFavorite=true';
+            break;
+        case "false":
+            pb_filter.value = 'isFavorite=false';
+            break;
+        default:
+            pb_filter.value = undefined;
+    }
+
+    query(1);
 }
 
 /**
