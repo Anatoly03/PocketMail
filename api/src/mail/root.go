@@ -1,7 +1,7 @@
 package mail
 
 import (
-	// "fmt"
+	"fmt"
 	"io"
 	"net/mail"
 	"os"
@@ -40,7 +40,7 @@ func (bkd *MailServer) Serve() error {
 	// s.Domain = bkd.App.Settings().SMTP.Host
 	s.AllowInsecureAuth = true
 
-	bkd.App.Logger().Info("Starting SMTP server on " + s.Addr)
+	fmt.Println("Starting SMTP server on " + s.Addr)
 	return s.ListenAndServe()
 }
 
@@ -55,12 +55,12 @@ type MailSession struct {
 
 // Discard currently processed message.
 func (bkd *MailSession) Reset() {
-	bkd.App.Logger().Info("Mail `RESET`")
+	fmt.Println("Mail `RESET`")
 }
 
 // Free all resources associated with session.
 func (bkd *MailSession) Logout() error {
-	bkd.App.Logger().Info("Mail `LOGOUT`")
+	fmt.Println("Mail `LOGOUT`")
 	return nil
 }
 
@@ -72,7 +72,7 @@ func (bkd *MailSession) Mail(from string, opts *smtp.MailOptions) error {
 	// fmt.Printf("envelope id: %s\n", opts.EnvelopeID)
 	// fmt.Printf("require tls: %v\n", opts.RequireTLS)
 
-	bkd.App.Logger().Info("Mail `MAIL`", "From", from)
+	fmt.Printf("Mail `MAIL` From: %s\n", from)
 
 	return nil
 }
@@ -87,7 +87,7 @@ func (bkd *MailSession) Rcpt(to string, opts *smtp.RcptOptions) error {
 	// fmt.Printf("OriginalRecipientType: %v\n", opts.OriginalRecipientType)
 	// fmt.Printf("RequireRecipientValidSince: %v\n", opts.RequireRecipientValidSince)
 
-	bkd.App.Logger().Info("Mail `RCPT`", "To", to)
+	fmt.Printf("Mail `RCPT` To: %s\n", to)
 
 	return nil
 }
@@ -113,7 +113,7 @@ func (bkd *MailSession) Data(r io.Reader) error {
 		return err
 	}
 
-	bkd.App.Logger().Info("Received message", "Message-Id", headers["Message-Id"], "From", headers["From"], "To", headers["To"])
+	fmt.Printf("Received message: Message-Id: %s, From: %s, To: %s\n", headers["Message-Id"], headers["From"], headers["To"])
 
 	// write to collection
 	collection, err := bkd.App.FindCollectionByNameOrId("mails")
@@ -141,7 +141,7 @@ func (bkd *MailSession) Data(r io.Reader) error {
 		record.Set("owner", userRecord.Id)
 	}
 
-	bkd.App.Logger().Info("Redirecting message", "Message-Id", headers["Message-Id"], "Assigned Owner", record.GetString("owner"))
+	fmt.Printf("Redirecting message: Message-Id: %s, Assigned Owner: %s\n", headers["Message-Id"], record.GetString("owner"))
 
 	if err := bkd.App.Save(record); err != nil {
 		return err
