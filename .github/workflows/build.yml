@@ -109,8 +109,8 @@ jobs:
             kill $(cat api-server.pid) || true
             echo "--- API server stdout (last 100 lines) ---"
             tail -n 100 api-server.log || true
-            echo "--- API server stderr (last 100 lines) ---"
-            tail -n 100 api-server.err || true
+            echo "--- API server stderr (full) ---"
+            cat api-server.err || true
             rm api-server.log api-server.err api-server.pid
           fi
 
