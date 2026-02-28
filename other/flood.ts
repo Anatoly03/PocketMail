@@ -51,7 +51,7 @@ async function generateFake() {
         const subject = faker.lorem.sentence();
         const sent = faker.date.past().toISOString();
 
-        const randomBody = faker.lorem
+        const randomBody = noAsk ? "Hi shortie, bye." : faker.lorem
             .paragraphs({ min: 1, max: 20 })
             .split("\n")
             .map((p) => `<p>${faker.lorem.words({ min: p.split(" ").length, max: p.split(" ").length * 6 })}</p>`)
