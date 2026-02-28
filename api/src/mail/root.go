@@ -33,7 +33,7 @@ func (bkd *MailServer) Serve() error {
 
 	s.Addr = os.Getenv("SMTP_PORT")
 	if s.Addr == "" {
-		s.Addr = "1025"
+		s.Addr = ":1025"
 	}
 
 	// s.Addr = bkd.App.Settings().SMTP.Host + ":" + strconv.Itoa(bkd.App.Settings().SMTP.Port)
