@@ -34,7 +34,11 @@ func main() {
     })
 
 	// Start the SMTP server in a separate goroutine.
-	go s.Serve()
+	go func() {
+		if err := s.Serve(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	// Start pocketbase.
 	if err := app.Start(); err != nil {

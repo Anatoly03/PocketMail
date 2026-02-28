@@ -32,6 +32,10 @@ func (bkd *MailServer) Serve() error {
 	s := smtp.NewServer(bkd)
 
 	s.Addr = os.Getenv("SMTP_PORT")
+	if s.Addr == "" {
+		s.Addr = "1025"
+	}
+
 	// s.Addr = bkd.App.Settings().SMTP.Host + ":" + strconv.Itoa(bkd.App.Settings().SMTP.Port)
 	// s.Domain = bkd.App.Settings().SMTP.Host
 	s.AllowInsecureAuth = true
@@ -133,7 +137,7 @@ func (bkd *MailSession) Data(r io.Reader) error {
 
 	// scan users collection for matching recipient email
 	// if no error, set the recipient field to the user record id
-	if userRecord, err := bkd.App.FindFirstRecordByFilter("users", "mailName = {:recipient}", dbx.Params{ "recipient": recipientName }); err == nil {
+	if userRecord, err := bkd.App.FindFirstRecordByFilter("users", "mailName = {:recipient}", dbx.Params{"recipient": recipientName}); err == nil {
 		record.Set("owner", userRecord.Id)
 	}
 
